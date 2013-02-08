@@ -1,0 +1,27 @@
+services:
+
+	googleanalytics.analyticsListener:
+		class: GoogleanalyticsModule\Listeners\AnalyticsListener
+		tags: [listener]
+
+	googleanalytics.accountFormFactory:
+		class: GoogleanalyticsModule\Forms\AccountFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+
+	cms.admin.googleanalyticsaccountPresenter:
+		class: GoogleanalyticsModule\Presenters\AccountPresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Googleanalyticsaccount:'
+			category: 'Analytics'
+			name: 'Account settings'
+			description: 'Setup your Google Analytics account'
+			priority: -50
+		]]
+
+factories:
+
+	googleanalytics.analyticsControl:
+		class: GoogleanalyticsModule\Components\AnalyticsControl
+		tags: [widget: googleAnalytics]
+
