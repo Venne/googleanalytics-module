@@ -1,0 +1,84 @@
+{define #page}
+	<div id="chart_div{!$control->name}" style="width: {!$control->size[0]}{if substr($control->size[0], -1)!='%'}px{/if}; height: {!$control->size[1]}{if substr($control->size[1], -1)!='%'}px{/if};"></div>
+	<script type="text/javascript">
+		$(function () {
+			setTimeout(function () {
+				var draw{!$control->name} = function() {
+					var data = google.visualization.arrayToDataTable([
+						{foreach $data->getColumnHeaders() as $key=>$header}
+							{first}[{/first}
+							{continueIf $key<4}
+							{if $key==4}'Date',{/if} {$header->getName()} {sep},{/sep} {last}],{/last}
+						{/foreach}
+
+						{foreach $data->getRows() as $row}
+						[
+							{foreach $row as $key=>$cell}
+							{continueIf $key<4}
+							{if $key==4}'{!$row['1']}/{!$row['2']}/{!$row['3']}', {/if}{!$cell} {sep},{/sep}
+							{/foreach}
+						]{sep},{/sep}
+						{/foreach}
+					]);
+
+					var options = {
+						legend:'none',
+						backgroundColor: {
+							fill:'transparent'
+						},
+						width: {if substr($control->size[0], -1)=='%'}'{!$control->size[0]}%'{else}{!$control->size[0]}{/if},
+						height: {if substr($control->size[1], -1)=='%'}'{!$control->size[1]}%'{else}{!$control->size[1]}{/if}
+					};
+
+					{if $control->options}
+					jQuery.extend(options, {!=json_encode($control->options)});
+					{/if}
+
+					var ac = new google.visualization.AreaChart(document.getElementById('chart_div{!$control->name}'));
+					ac.draw(data, options);
+				}
+
+				google.load('visualization', '1.0', { 'callback': draw{!$control->name}, 'packages': ['corechart']});
+				google.setOnLoadCallback(draw{!$control->name});
+
+				$(window).resize(draw{!$control->name});
+				$('#chart_div{!$control->name}').bind('resize', draw{!$control->name});
+			}, 0);
+		});
+	</script>
+{/define}
+
+{if !isset($ajax)}
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{/if}
+
+{snippet data}
+{if isset($data)}
+	{include #page data=>$data}
+{else}
+	{if isset($error)}
+		{foreach $flashes as $flash}
+			<div class="alert alert-{$flash->type}">
+				<a class="close" data-dismiss="alert">×</a>
+				{$flash->message}
+			</div>
+		{/foreach}
+	{else}
+		{if $control->isInCache()}
+			{$control->renderChart()}
+		{else}
+			<p style="text-align: center;">
+				<img src="{$basePath}/resources/cmsModule/admin/images/ajax-loader.gif"/>
+			</p>
+			<script>
+				$(function () {
+					$.nette.ajax({
+						url: {link load!},
+						off: ['unique']
+					});
+				});
+			</script>
+		{/if}
+	{/if}
+{/if}
+{/snippet}

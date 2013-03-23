@@ -25,15 +25,54 @@ class AnalyticsManager extends Object
 	/** @var string */
 	protected $accountId;
 
+	/** @var bool */
+	protected $apiActivated;
+
+	/** @var string */
+	protected $applicationName;
+
+	/** @var string */
+	protected $clientId;
+
+	/** @var string */
+	protected $clientMail;
+
+	/** @var int */
+	protected $gaId;
+
+	/** @var string */
+	protected $keyFile;
+
+	/** @var \Google_Client */
+	protected $_googleClient;
+
+	/** @var \Google_AnalyticsService */
+	protected $_analyticsService;
+
+	/** @var string */
+	protected $googleanalyticsPath;
+
+
+	public function __construct($activated, $accountId, $apiActivated, $applicationName, $clientId, $clientMail, $gaId, $keyFile, $googleanalyticsPath)
+	{
+		$this->accountId = $accountId;
+		$this->activated = $activated;
+		$this->apiActivated = $apiActivated;
+		$this->applicationName = $applicationName;
+		$this->clientId = $clientId;
+		$this->clientMail = $clientMail;
+		$this->gaId = $gaId;
+		$this->keyFile = $keyFile;
+		$this->googleanalyticsPath = $googleanalyticsPath;
+	}
+
 
 	/**
-	 * @param $activated
-	 * @param $accountId
+	 * @return string
 	 */
-	public function __construct($activated, $accountId)
+	public function getAccountId()
 	{
-		$this->activated = $activated;
-		$this->accountId = $accountId;
+		return $this->accountId;
 	}
 
 
@@ -47,10 +86,92 @@ class AnalyticsManager extends Object
 
 
 	/**
+	 * @return boolean
+	 */
+	public function getApiActivated()
+	{
+		return $this->apiActivated;
+	}
+
+
+	/**
 	 * @return string
 	 */
-	public function getAccountId()
+	public function getApplicationName()
 	{
-		return $this->accountId;
+		return $this->applicationName;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getClientId()
+	{
+		return $this->clientId;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getClientMail()
+	{
+		return $this->clientMail;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getGaId()
+	{
+		return $this->gaId;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getKeyFile()
+	{
+		return $this->keyFile;
+	}
+
+
+	public function getGoogleAnalyticsService($redirectUrl)
+	{
+		if (!$this->_analyticsService) {
+			include_once $this->googleanalyticsPath . '/src/Google_Client.php';
+			include_once $this->googleanalyticsPath . '/src/contrib/Google_AnalyticsService.php';
+
+			$client = $this->getGoogleClient($redirectUrl);
+			$this->_analyticsService = new \Google_AnalyticsService($client);
+		}
+
+		return $this->_analyticsService;
+	}
+
+
+	/**
+	 * @return \Google_Client
+	 */
+	protected function getGoogleClient($redirectUrl)
+	{
+		if (!$this->_googleClient) {
+			$this->_googleClient = new \Google_Client();
+			$this->_googleClient->setUseObjects(TRUE);
+			$this->_googleClient->setApplicationName($this->applicationName);
+			$this->_googleClient->setAssertionCredentials(
+				new \Google_AssertionCredentials(
+					$this->clientMail,
+					array('https://www.googleapis.com/auth/analytics.readonly'),
+					file_get_contents($this->keyFile)
+				)
+			);
+			$this->_googleClient->setClientId($this->clientId);
+			$this->_googleClient->setRedirectUri($redirectUrl);
+		}
+		return $this->_googleClient;
 	}
 }

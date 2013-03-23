@@ -21,11 +21,20 @@ use Nette\Application\Routers\Route;
 class GoogleanalyticsExtension extends CompilerExtension
 {
 
+	const DIR = 'googleanalytics';
+
 	/** @var array */
 	public $defaults = array(
 		'account' => array(
 			'activated' => FALSE,
 			'accountId' => '',
+		),
+		'api' => array(
+			'activated' => FALSE,
+			'applicationName' => NULL,
+			'clientId' => NULL,
+			'clientMail' => NULL,
+			'gaId' => NULL,
 		),
 
 	);
@@ -42,6 +51,22 @@ class GoogleanalyticsExtension extends CompilerExtension
 		$config = $this->getConfig($this->defaults);
 
 		$container->addDefinition($this->prefix('analyticsManager'))
-			->setClass('GoogleanalyticsModule\AnalyticsManager', array($config['account']['activated'], $config['account']['accountId']));
+			->setClass('GoogleanalyticsModule\AnalyticsManager')
+			->setArguments(array(
+				$config['account']['activated'],
+				$config['account']['accountId'],
+				$config['api']['activated'],
+				$config['api']['applicationName'],
+				$config['api']['clientId'],
+				$config['api']['clientMail'],
+				$config['api']['gaId'],
+				$container->parameters['dataDir'] . '/' . self::DIR . '/key.p12',
+				$container->parameters['modules']['googleanalytics']['path'],
+			));
+
+		if (!file_exists($container->parameters['dataDir'] . '/' . self::DIR)) {
+			umask(0000);
+			mkdir($container->parameters['dataDir'] . '/' . self::DIR);
+		}
 	}
 }

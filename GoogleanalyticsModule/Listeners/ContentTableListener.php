@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * This file is part of the Venne:CMS (https://github.com/Venne)
+ *
+ * Copyright (c) 2011, 2012 Josef Kříž (http://www.josef-kriz.cz)
+ *
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ */
+
+namespace GoogleanalyticsModule\Listeners;
+
+use CmsModule\Components\Table\TableControl;
+use GoogleanalyticsModule\AnalyticsManager;
+use Nette\Utils\Html;
+
+/**
+ * @author Josef Kříž <pepakriz@gmail.com>
+ */
+class ContentTableListener
+{
+
+	/** @var AnalyticsManager */
+	protected $analyticsManager;
+
+
+	public function __construct(AnalyticsManager $analyticsManager)
+	{
+		$this->analyticsManager = $analyticsManager;
+	}
+
+
+	public function onAttached(TableControl $table)
+	{
+		if ($this->analyticsManager->getApiActivated()) {
+			$presenter = $table->getPresenter();
+
+			$table->getColumn('name')->setWidth('40%');
+			$table->getColumn('url')->setWidth('20%');
+			$table->getColumn('languages')->setWidth('20%');
+
+			$table->addColumn('statistics', 'Statistics')
+				->setWidth(140)
+				->setCallback(function ($entity) use ($presenter) {
+					ob_start();
+					$presenter['googleAnalyticsVisitorsMulti-' . $entity->id]->render(array(
+						'size' => array(190, 51),
+						'filterPath' => '/' . $entity->mainRoute->url,
+						'options' => array(
+							'pointSize' => 2,
+							'hAxis' => array('textPosition' => 'none', 'gridlines' => array('color' => 'transparent')),
+							'vAxis' => array('textPosition' => 'none', 'gridlines' => array('color' => 'transparent')),
+						),
+						'metrics' => 'ga:visits',
+						'history' => '-2 weeks',
+					));
+					$ret = ob_get_clean();
+					$html = Html::el('div');
+					$html->style = 'margin: -15px -25px;';
+					$html->setHtml($ret);
+					return $html;
+				});
+		}
+	}
+}

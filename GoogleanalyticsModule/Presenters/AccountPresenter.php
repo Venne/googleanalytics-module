@@ -16,6 +16,8 @@ use GoogleanalyticsModule\Forms\AccountFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @secured
  */
 class AccountPresenter extends BasePresenter
 {
@@ -31,6 +33,14 @@ class AccountPresenter extends BasePresenter
 	public function injectAccountFormFactory(AccountFormFactory $accountFormFactory)
 	{
 		$this->accountFormFactory = $accountFormFactory;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
 	}
 
 
