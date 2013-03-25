@@ -57,10 +57,18 @@
 			</p>
 			<script>
 				$(function () {
-					$.nette.ajax({
-						url: {link load!},
-						off: ['unique']
-					});
+					function checkSendAjax() {
+						if ($.active > 0) {
+							window.setTimeout(checkSendAjax, 1000);
+						} else {
+							$.nette.ajax({
+								url: {link load!},
+								off: ['unique', 'spinner']
+							});
+							return true;
+						}
+					};
+					checkSendAjax();
 				});
 			</script>
 		{/if}
