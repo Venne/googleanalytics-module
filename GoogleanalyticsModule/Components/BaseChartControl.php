@@ -44,6 +44,9 @@ abstract class BaseChartControl extends Control
 	/** @var array */
 	protected $options;
 
+	/** @var  bool */
+	protected $toolbar = FALSE;
+
 
 	public function __construct(AnalyticsManager $analyticsManager, FileStorage $fileStorage)
 	{
@@ -82,14 +85,33 @@ abstract class BaseChartControl extends Control
 	}
 
 
-	public function handleLoad()
+	public function getHistory()
 	{
-		$this->invalidateControl('data');
-		$this->template->ajax = TRUE;
+		return $this->history;
 	}
 
 
-	public function render()
+	public function getToolbar()
+	{
+		return $this->toolbar;
+	}
+
+
+	public function handleLoad($args = array())
+	{
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->setArguments($args);
+
+		$this->template->ajax = TRUE;
+		$this->invalidateControl('data');
+		$this->presenter->payload->url = $this->link('this');
+	}
+
+
+	public function setArguments()
 	{
 		$args = func_get_args();
 
@@ -110,6 +132,16 @@ abstract class BaseChartControl extends Control
 			$this->options = $args[0]['options'];
 		}
 
+		if (isset($args[0]['toolbar'])) {
+			$this->toolbar = $args[0]['toolbar'];
+		}
+	}
+
+
+	public function render()
+	{
+		call_user_func_array(array($this, 'setArguments'), func_get_args());
+
 		if (isset($this->template->ajax)) {
 			$this->renderChart();
 			return;
@@ -127,7 +159,8 @@ abstract class BaseChartControl extends Control
 
 	public function renderChart($return = FALSE)
 	{
-		$ret = $this->cache->load($this->getKey());
+		$key = $this->getKey();
+		$ret = $this->cache->load($key);
 		if (!$ret) {
 
 			try {
@@ -141,9 +174,9 @@ abstract class BaseChartControl extends Control
 			}
 
 			ob_start();
-			$this->template->render();
+			$this->template->__toString();
 			$ret = ob_get_clean();
-			$this->cache->save($this->getKey(), $ret, array(
+			$this->cache->save($key, $ret, array(
 				Cache::EXPIRE => '+ 30 minutes',
 			));
 		}
@@ -169,6 +202,7 @@ abstract class BaseChartControl extends Control
 			$this->analyticsManager->getClientMail(),
 			$this->analyticsManager->getGaId(),
 			$this->getGoogleAnalyticsArgs(),
+			$this->toolbar,
 		);
 	}
 

@@ -58,11 +58,11 @@
 			<script>
 				$(function () {
 					function checkSendAjax() {
-						if ($.active > 0) {
+						if ($.active > 2) {
 							window.setTimeout(checkSendAjax, 1000);
 						} else {
 							$.nette.ajax({
-								url: {link load!},
+								url: {link load! args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options]},
 								off: ['unique', 'spinner']
 							});
 							return true;

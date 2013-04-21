@@ -17,16 +17,23 @@ namespace GoogleanalyticsModule\Components;
 class VisitorsChartControl extends BaseChartControl
 {
 
+	/** @persistent */
+	public $showVisits = TRUE;
+
+	/** @persistent */
+	public $showNewVisits = TRUE;
+
+	/** @persistent */
+	public $showPageViews = TRUE;
+
 	/** @var string */
 	protected $filterPath;
 
 	/** @var string */
 	protected $metrics = 'ga:newVisits,ga:visits,ga:pageviews';
 
-	/**
-	 * @param null $filterPath
-	 */
-	public function render($filterPath = NULL)
+
+	public function setArguments()
 	{
 		$args = func_get_args();
 
@@ -34,7 +41,7 @@ class VisitorsChartControl extends BaseChartControl
 			$this->filterPath = $args[0]['filterPath'];
 		}
 
-		return call_user_func_array(array('parent', 'render'), $args);
+		call_user_func_array(array('parent', 'setArguments'), func_get_args());
 	}
 
 
@@ -62,5 +69,43 @@ class VisitorsChartControl extends BaseChartControl
 		}
 
 		return $ret;
+	}
+
+
+	public function render()
+	{
+		$this->metrics = array();
+
+		if ($this->showNewVisits) {
+			$this->metrics[] = 'ga:newVisits';
+		}
+		if ($this->showVisits) {
+			$this->metrics[] = 'ga:visits';
+		}
+		if ($this->showPageViews) {
+			$this->metrics[] = 'ga:pageviews';
+		}
+		$this->metrics = implode(',', $this->metrics);
+
+		call_user_func_array(array('parent', 'render'), func_get_args());
+	}
+
+
+	public function renderChart($return = FALSE)
+	{
+		$this->metrics = array();
+
+		if ($this->showNewVisits) {
+			$this->metrics[] = 'ga:newVisits';
+		}
+		if ($this->showVisits) {
+			$this->metrics[] = 'ga:visits';
+		}
+		if ($this->showPageViews) {
+			$this->metrics[] = 'ga:pageviews';
+		}
+		$this->metrics = implode(',', $this->metrics);
+
+		call_user_func_array(array('parent', 'renderChart'), func_get_args());
 	}
 }

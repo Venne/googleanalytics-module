@@ -1,3 +1,13 @@
+{snippet data}
+
+{if $control->toolbar}
+	<div class="btn-group">
+		<a n:href="load! showVisits=>!$control->showVisits, args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]" class="ajax btn{if $control->showVisits} active{/if}">Visits</a>
+		<a n:href="load! showNewVisits=>!$control->showNewVisits,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]" class="ajax btn{if $control->showNewVisits} active{/if}">New visits</a>
+		<a n:href="load! showPageViews=>!$control->showPageViews,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]" class="ajax btn{if $control->showPageViews} active{/if}">Page views</a>
+	</div>
+{/if}
+
 {define #page}
 	<div id="chart_div{!$control->name}" style="width: {!$control->size[0]}{if substr($control->size[0], -1)!='%'}px{/if}; height: {!$control->size[1]}{if substr($control->size[1], -1)!='%'}px{/if};"></div>
 	<script type="text/javascript">
@@ -52,7 +62,6 @@
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {/if}
 
-{snippet data}
 {if isset($data)}
 	{include #page data=>$data}
 {else}
@@ -73,11 +82,11 @@
 			<script>
 				$(function () {
 					function checkSendAjax() {
-						if ($.active > 0) {
+						if ($.active > 2) {
 							window.setTimeout(checkSendAjax, 1000);
 						} else {
 							$.nette.ajax({
-								url: {link load!},
+								url: {link load! args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]},
 								off: ['unique', 'spinner']
 							});
 							return true;
