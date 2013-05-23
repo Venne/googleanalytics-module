@@ -30,16 +30,8 @@
 						"accountId": ""
 					}
 				},
-				"includes": [
-					"%modules.googleanalytics.path%/Resources/config/config.neon"
-				],
 				"extensions": {
 					"googleanalytics": "GoogleanalyticsModule\\DI\\GoogleanalyticsExtension"
-				},
-				"translator": {
-					"dictionaries": [
-						"%modules.googleanalytics.path%/Resources/translations"
-					]
 				}
 			}
 		}
