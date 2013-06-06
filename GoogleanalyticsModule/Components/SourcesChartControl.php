@@ -20,6 +20,14 @@ class SourcesChartControl extends BaseChartControl
 	/** @var string */
 	protected $metrics = 'ga:visits';
 
+
+	public function render()
+	{
+		call_user_func_array(array($this, 'setArguments'), func_get_args());
+		call_user_func_array(array('parent', 'render'), func_get_args());
+	}
+
+
 	protected function getGoogleAnalyticsData()
 	{
 		$data = $this->getGoogleAnalyticsService()->data_ga->get(

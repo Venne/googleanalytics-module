@@ -11,11 +11,11 @@
 
 namespace GoogleanalyticsModule\Components;
 
+use GoogleanalyticsModule\AnalyticsManager;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Utils\Strings;
 use Venne\Application\UI\Control;
-use GoogleanalyticsModule\AnalyticsManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -107,7 +107,6 @@ abstract class BaseChartControl extends Control
 
 		$this->template->ajax = TRUE;
 		$this->invalidateControl('data');
-		$this->presenter->payload->url = $this->link('this');
 	}
 
 
@@ -117,6 +116,12 @@ abstract class BaseChartControl extends Control
 
 		if (isset($args[0]['size'])) {
 			$this->size = $args[0]['size'];
+			if (is_numeric($this->size[0])) {
+				$this->size[0] = (int)$this->size[0];
+			}
+			if (is_numeric($this->size[1])) {
+				$this->size[1] = (int)$this->size[1];
+			}
 		}
 
 		if (isset($args[0]['history'])) {
@@ -130,18 +135,19 @@ abstract class BaseChartControl extends Control
 
 		if (isset($args[0]['options'])) {
 			$this->options = $args[0]['options'];
+			if (isset($this->options['pointSize'])) {
+				$this->options['pointSize'] = (int) $this->options['pointSize'];
+			}
 		}
 
 		if (isset($args[0]['toolbar'])) {
-			$this->toolbar = $args[0]['toolbar'];
+			$this->toolbar = (bool)$args[0]['toolbar'];
 		}
 	}
 
 
 	public function render()
 	{
-		call_user_func_array(array($this, 'setArguments'), func_get_args());
-
 		if (isset($this->template->ajax)) {
 			$this->renderChart();
 			return;
@@ -162,9 +168,11 @@ abstract class BaseChartControl extends Control
 		$key = $this->getKey();
 		$ret = $this->cache->load($key);
 		if (!$ret) {
-
 			try {
-				$this->template->data = $this->getGoogleAnalyticsData();
+				$ret = $this->getGoogleAnalyticsData();
+				$this->cache->save($key, $ret, array(
+					Cache::EXPIRE => '+ 30 minutes',
+				));
 			} catch (\Google_AuthException $e) {
 				$this->flashMessage($e->getMessage(), 'warning');
 				$this->template->error = TRUE;
@@ -172,20 +180,15 @@ abstract class BaseChartControl extends Control
 				$this->flashMessage($e->getMessage(), 'warning');
 				$this->template->error = TRUE;
 			}
-
-			ob_start();
-			$this->template->__toString();
-			$ret = ob_get_clean();
-			$this->cache->save($key, $ret, array(
-				Cache::EXPIRE => '+ 30 minutes',
-			));
 		}
+
+		$this->template->data = $ret;
 
 		if ($return) {
-			return $ret;
+			return $this->template->__toString();
 		}
 
-		echo $ret;
+		echo $this->template->render();
 	}
 
 
@@ -197,12 +200,12 @@ abstract class BaseChartControl extends Control
 			$this->history,
 			$this->metrics,
 			$this->options,
-			$this->analyticsManager->getApiActivated(),
+			(bool)$this->analyticsManager->getApiActivated(),
 			$this->analyticsManager->getClientId(),
 			$this->analyticsManager->getClientMail(),
 			$this->analyticsManager->getGaId(),
 			$this->getGoogleAnalyticsArgs(),
-			$this->toolbar,
+			(bool)$this->toolbar,
 		);
 	}
 

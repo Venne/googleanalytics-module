@@ -1,13 +1,5 @@
 {snippet data}
 
-{if $control->toolbar}
-	<div class="btn-group">
-		<a n:href="load! showVisits=>!$control->showVisits, args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]" class="ajax btn{if $control->showVisits} active{/if}">Visits</a>
-		<a n:href="load! showNewVisits=>!$control->showNewVisits,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]" class="ajax btn{if $control->showNewVisits} active{/if}">New visits</a>
-		<a n:href="load! showPageViews=>!$control->showPageViews,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]" class="ajax btn{if $control->showPageViews} active{/if}">Page views</a>
-	</div>
-{/if}
-
 {define #page}
 	<div id="chart_div{!$control->name}" style="width: {!$control->size[0]}{if substr($control->size[0], -1)!='%'}px{/if}; height: {!$control->size[1]}{if substr($control->size[1], -1)!='%'}px{/if};"></div>
 	<script type="text/javascript">
@@ -58,14 +50,26 @@
 	</script>
 {/define}
 
+{define #toolbar}
+{if $control->toolbar}
+	<div class="btn-group">
+		<a n:href="load! showVisits=>!$control->showVisits, args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showVisits} active{/if}">Visits</a>
+		<a n:href="load! showNewVisits=>!$control->showNewVisits,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showNewVisits} active{/if}">New visits</a>
+		<a n:href="load! showPageViews=>!$control->showPageViews,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showPageViews} active{/if}">Page views</a>
+	</div>
+{/if}
+{/define}
+
 {if !isset($ajax)}
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {/if}
 
 {if isset($data)}
+	{include #toolbar}
 	{include #page data=>$data}
 {else}
 	{if isset($error)}
+		{include #toolbar}
 		{foreach $flashes as $flash}
 			<div class="alert alert-{$flash->type}">
 				<a class="close" data-dismiss="alert">×</a>
@@ -76,6 +80,8 @@
 		{if $control->isInCache()}
 			{$control->renderChart()}
 		{else}
+			{include #toolbar}
+
 			<p style="text-align: center;">
 				<img src="{$basePath}/resources/cmsModule/admin/images/ajax-loader.gif"/>
 			</p>
@@ -86,7 +92,7 @@
 							window.setTimeout(checkSendAjax, 1000);
 						} else {
 							$.nette.ajax({
-								url: {link load! args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar]},
+								url: {link load! args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]},
 								off: ['unique', 'spinner']
 							});
 							return true;

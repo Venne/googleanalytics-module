@@ -44,7 +44,7 @@ class AccountPresenter extends BasePresenter
 	}
 
 
-	public function createComponentForm()
+	protected function createComponentForm()
 	{
 		$form = $this->accountFormFactory->invoke();
 		$form->onSuccess[] = $this->formSuccess;

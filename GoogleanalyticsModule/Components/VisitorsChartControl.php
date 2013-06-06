@@ -33,6 +33,24 @@ class VisitorsChartControl extends BaseChartControl
 	protected $metrics = 'ga:newVisits,ga:visits,ga:pageviews';
 
 
+	/**
+	 * @param string $filterPath
+	 */
+	public function setFilterPath($filterPath)
+	{
+		$this->filterPath = $filterPath;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getFilterPath()
+	{
+		return $this->filterPath;
+	}
+
+
 	public function setArguments()
 	{
 		$args = func_get_args();
@@ -74,6 +92,7 @@ class VisitorsChartControl extends BaseChartControl
 
 	public function render()
 	{
+		call_user_func_array(array($this, 'setArguments'), func_get_args());
 		$this->metrics = array();
 
 		if ($this->showNewVisits) {

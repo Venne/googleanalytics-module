@@ -11,7 +11,7 @@
 
 namespace GoogleanalyticsModule\Listeners;
 
-use CmsModule\Components\Table\TableControl;
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use GoogleanalyticsModule\AnalyticsManager;
 use Nette\Utils\Html;
 
@@ -31,24 +31,23 @@ class ContentTableListener
 	}
 
 
-	public function onAttached(TableControl $table)
+	public function onAttached(AdminGrid $table)
 	{
+		$table = $table->getTable();
+
 		if ($this->analyticsManager->getApiActivated()) {
 			$presenter = $table->getPresenter();
 
-			$table->getColumn('name')->setWidth('40%');
-			$table->getColumn('url')->setWidth('20%');
-			$table->getColumn('languages')->setWidth('20%');
 
-			$table->addColumn('statistics', 'Statistics')
-				->setWidth(140)
-				->setCallback(function ($entity) use ($presenter) {
+			$column = $table->addColumn('statistics', 'Statistics');
+			$column->getCellPrototype()->width = '140';
+			$column->setCustomRender(function ($entity) use ($presenter) {
 					ob_start();
 					$presenter['googleAnalyticsVisitorsMulti-' . $entity->id]->render(array(
 						'size' => array(190, 51),
 						'filterPath' => '/' . $entity->mainRoute->url,
 						'options' => array(
-							'pointSize' => 2,
+							'pointSize' => '2',
 							'hAxis' => array('textPosition' => 'none', 'gridlines' => array('color' => 'transparent')),
 							'vAxis' => array('textPosition' => 'none', 'gridlines' => array('color' => 'transparent')),
 						),

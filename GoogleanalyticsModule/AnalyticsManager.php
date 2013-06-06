@@ -64,6 +64,9 @@ class AnalyticsManager extends Object
 		$this->gaId = $gaId;
 		$this->keyFile = $keyFile;
 		$this->googleanalyticsPath = $googleanalyticsPath;
+
+		include_once $this->googleanalyticsPath . '/src/Google_Client.php';
+		include_once $this->googleanalyticsPath . '/src/contrib/Google_AnalyticsService.php';
 	}
 
 
@@ -142,9 +145,6 @@ class AnalyticsManager extends Object
 	public function getGoogleAnalyticsService($redirectUrl)
 	{
 		if (!$this->_analyticsService) {
-			include_once $this->googleanalyticsPath . '/src/Google_Client.php';
-			include_once $this->googleanalyticsPath . '/src/contrib/Google_AnalyticsService.php';
-
 			$client = $this->getGoogleClient($redirectUrl);
 			$this->_analyticsService = new \Google_AnalyticsService($client);
 		}
