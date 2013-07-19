@@ -13,7 +13,7 @@ namespace GoogleanalyticsModule\Components;
 
 use GoogleanalyticsModule\AnalyticsManager;
 use Nette\Caching\Cache;
-use Nette\Caching\Storages\FileStorage;
+use Nette\Caching\IStorage;
 use Nette\Utils\Strings;
 use Venne\Application\UI\Control;
 
@@ -48,7 +48,7 @@ abstract class BaseChartControl extends Control
 	protected $toolbar = FALSE;
 
 
-	public function __construct(AnalyticsManager $analyticsManager, FileStorage $fileStorage)
+	public function __construct(AnalyticsManager $analyticsManager, IStorage $fileStorage)
 	{
 		parent::__construct();
 
