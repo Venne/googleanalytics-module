@@ -2,7 +2,7 @@
 	"name": "venne/googleanalytics-module",
 	"description": "google analytics module",
 	"keywords": ["cms", "nette", "venne", "module"],
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"authors": [
 		{
 			"name": "Josef Kříž",
@@ -11,7 +11,7 @@
 	],
 	"require": {
 		"php": ">=5.3.2",
-		"venne/cms-module": ">=2.0.0-dev,<2.2.0-dev"
+		"venne/cms-module": "2.1.*"
 	},
 	"autoload": {
 		"psr-0": {
@@ -20,7 +20,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "2.0.x-dev"
+			"dev-master": "2.1-dev"
 		},
 		"venne": {
 			"configuration": {
