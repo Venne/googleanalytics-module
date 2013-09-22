@@ -53,9 +53,9 @@
 {define #toolbar}
 {if $control->toolbar}
 	<div class="btn-group">
-		<a n:href="load! showVisits=>!$control->showVisits, args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showVisits} active{/if}">Visits</a>
-		<a n:href="load! showNewVisits=>!$control->showNewVisits,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showNewVisits} active{/if}">New visits</a>
-		<a n:href="load! showPageViews=>!$control->showPageViews,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showPageViews} active{/if}">Page views</a>
+		<a n:href="load! showVisits=>!$control->showVisits, args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showVisits} active{/if}">{_Visits}</a>
+		<a n:href="load! showNewVisits=>!$control->showNewVisits,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showNewVisits} active{/if}">{_'New visits'}</a>
+		<a n:href="load! showPageViews=>!$control->showPageViews,  args=>[size=>$control->size, history=>$control->history, metrics=>$control->metrics, options=>$control->options, toolbar=>$control->toolbar, filterPath=>$control->filterPath]" class="ajax btn{if $control->showPageViews} active{/if}">{_'Page views'}</a>
 	</div>
 {/if}
 {/define}
